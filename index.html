@@ -1,535 +1,1215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CringeTV - Your Ultimate Entertainment Hub">
-    <meta name="keywords" content="CringeTV, streaming, entertainment, channels">
-    <title>CringeTV - Home</title>
-    <style>
-        :root {
-            --primary-color: #f69b81;
-            --secondary-color: #060625;
-            --accent-color: #f6fab9;
-            --text-color: #ffffff;
-            --transition-speed: 0.5s;
-            --font-family: 'Open Sans', sans-serif;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WorkTruth · Employee Reviews That Matter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+:root{
+  --bg:#0a0c0f;--surface:#111418;--surface2:#181c22;--surface3:#1e232c;
+  --border:rgba(255,255,255,0.07);--border-strong:rgba(255,255,255,0.13);
+  --accent:#e8ff47;--accent2:#47ffd4;--accent3:#ff6b6b;--accent4:#b47fff;
+  --text:#f0f2f5;--text-muted:#6b7280;--text-dim:#3d4555;
+  --syne:'Syne',sans-serif;--dm:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:14px;--shadow:0 8px 40px rgba(0,0,0,0.55);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--dm);font-size:15px;min-height:100vh;overflow-x:hidden;}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
 
-        body {
-            font-family: var(--font-family);
-            background: radial-gradient(circle, var(--primary-color) 0%, var(--secondary-color) 68%);
-            color: var(--text-color);
-            min-height: 100vh;
-        }
+/* NOISE TEXTURE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
 
-        .header {
-            left: 0.5rem;
-            top: 0.5rem;
-            padding: 1.2rem;
-            text-align: left;
-            position: fixed;
-            overflow: visible;
-            background: var(--secondary-color);
-            z-index: 1;
-        }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,15,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:var(--syne);font-weight:800;font-size:1.35rem;color:var(--text);letter-spacing:-0.5px;}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-btn{padding:7px 16px;border-radius:8px;font-family:var(--dm);font-size:0.83rem;font-weight:500;cursor:pointer;border:none;transition:all 0.18s;}
+.nav-btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.nav-btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.nav-btn-primary{background:var(--accent);color:#0a0c0f;font-weight:700;}
+.nav-btn-primary:hover{background:#d4eb30;transform:translateY(-1px);}
+.nav-user{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface3);border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--accent);font-family:var(--syne);font-weight:700;cursor:pointer;}
 
-        .static-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15),
-                rgba(0, 0, 0, 0.15) 3px,
-                transparent 1px,
-                transparent 2px
-            );
-            background-size: 100% 4px;
-            animation: static 0.2s steps(4) infinite;
-            pointer-events: none;
-        }
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:100px 24px 60px;position:relative;}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(232,255,71,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:20px;background:rgba(232,255,71,0.08);border:1px solid rgba(232,255,71,0.2);color:var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:1px;margin-bottom:28px;}
+.hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+h1{font-family:var(--syne);font-weight:800;font-size:clamp(2.8rem,7vw,5.5rem);line-height:0.95;letter-spacing:-2px;max-width:760px;margin-bottom:20px;}
+h1 em{font-style:normal;color:var(--accent);}
+.hero-sub{color:var(--text-muted);font-size:1.08rem;line-height:1.6;max-width:520px;margin-bottom:40px;font-weight:300;}
 
-        .static-overlay::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(
-                circle at center,
-                transparent 0%,
-                rgba(0, 0, 0, 0.2) 100%
-            );
-            animation: noise 0.5s steps(10) infinite;
-        }
+/* SEARCH BAR */
+.search-wrap{max-width:680px;position:relative;margin-bottom:60px;}
+.search-bar{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border-strong);border-radius:14px;overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;}
+.search-bar:focus-within{border-color:rgba(232,255,71,0.5);box-shadow:0 0 0 3px rgba(232,255,71,0.08);}
+.search-icon{padding:0 16px;color:var(--text-muted);font-size:1.1rem;flex-shrink:0;}
+.search-input{flex:1;background:none;border:none;outline:none;padding:16px 0;font-family:var(--dm);font-size:1rem;color:var(--text);}
+.search-input::placeholder{color:var(--text-dim);}
+.search-sep{width:1px;height:30px;background:var(--border);}
+.search-loc{padding:0 16px;background:none;border:none;outline:none;font-family:var(--dm);font-size:0.87rem;color:var(--text-muted);cursor:pointer;white-space:nowrap;}
+.search-btn{margin:6px;padding:10px 22px;background:var(--accent);color:#0a0c0f;border:none;border-radius:10px;font-family:var(--syne);font-weight:700;font-size:0.9rem;cursor:pointer;flex-shrink:0;transition:background 0.15s;}
+.search-btn:hover{background:#d4eb30;}
+.search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface2);border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;z-index:100;display:none;}
+.search-suggestions.visible{display:block;}
+.sug-item{padding:12px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:0.9rem;}
+.sug-item:hover{background:var(--surface3);}
+.sug-item-icon{font-size:1.1rem;flex-shrink:0;}
+.sug-item-sub{color:var(--text-muted);font-size:0.78rem;margin-top:2px;}
 
-        .static-overlay::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(0, 0, 0, 0.15),
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            background-size: 4px 100%;
-            animation: static 0.2s steps(4) infinite;
-        }
+/* STATS */
+.stats-row{display:flex;gap:40px;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;}
+.stat-num{font-family:var(--syne);font-weight:800;font-size:1.9rem;color:var(--text);letter-spacing:-1px;}
+.stat-label{color:var(--text-muted);font-size:0.78rem;margin-top:2px;}
 
-        @keyframes static {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(4px);
-            }
-        }
+/* SECTION */
+.section{padding:80px 24px;position:relative;z-index:1;}
+.section-tag{font-family:var(--mono);font-size:0.7rem;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.section-title{font-family:var(--syne);font-weight:800;font-size:clamp(1.8rem,3.5vw,2.8rem);letter-spacing:-1px;margin-bottom:8px;}
+.section-sub{color:var(--text-muted);font-size:1rem;line-height:1.6;max-width:480px;font-weight:300;}
 
-        @keyframes noise {
-            0% {
-                transform: translate(0, 0);
-            }
-            10% {
-                transform: translate(-5%, -5%);
-            }
-            20% {
-                transform: translate(-10%, 5%);
-            }
-            30% {
-                transform: translate(5%, -10%);
-            }
-            40% {
-                transform: translate(-5%, 15%);
-            }
-            50% {
-                transform: translate(-10%, 5%);
-            }
-            60% {
-                transform: translate(15%, 0);
-            }
-            70% {
-                transform: translate(0, 10%);
-            }
-            80% {
-                transform: translate(-15%, 0);
-            }
-            90% {
-                transform: translate(10%, 5%);
-            }
-            100% {
-                transform: translate(5%, 0);
-            }
-        }
+/* FEATURED COMPANIES */
+#featured{background:var(--surface);}
+.companies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:40px;}
+.company-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.company-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s;}
+.company-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:var(--shadow);}
+.company-card:hover::before{opacity:1;}
+.company-card-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.company-logo{width:48px;height:48px;border-radius:10px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.company-name{font-family:var(--syne);font-weight:700;font-size:1rem;margin-bottom:2px;}
+.company-industry{color:var(--text-muted);font-size:0.78rem;}
+.company-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.badge{padding:3px 9px;border-radius:20px;font-size:0.7rem;font-family:var(--mono);font-weight:500;}
+.badge-certified{background:rgba(71,255,212,0.1);color:var(--accent2);border:1px solid rgba(71,255,212,0.2);}
+.badge-trending{background:rgba(232,255,71,0.1);color:var(--accent);border:1px solid rgba(232,255,71,0.2);}
+.badge-warn{background:rgba(255,107,107,0.1);color:var(--accent3);border:1px solid rgba(255,107,107,0.2);}
+.badge-location{background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--border);}
+.rating-row{display:flex;align-items:center;gap:10px;}
+.stars{color:var(--accent);font-size:0.9rem;letter-spacing:1px;}
+.rating-num{font-family:var(--syne);font-weight:700;font-size:1.1rem;}
+.rating-count{color:var(--text-muted);font-size:0.78rem;}
+.company-snippet{color:var(--text-muted);font-size:0.83rem;line-height:1.5;margin-top:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
-        .static-overlay.fade-out {
-            animation: fadeOut 1s forwards;
-        }
+/* MAP SECTION */
+#map-section{padding:0;}
+.map-container{position:relative;height:520px;}
+#emp-map{width:100%;height:100%;z-index:1;}
+.map-overlay{position:absolute;top:20px;left:20px;z-index:10;background:rgba(10,12,15,0.9);backdrop-filter:blur(16px);border:1px solid var(--border-strong);border-radius:12px;padding:16px 20px;max-width:280px;}
+.map-overlay-title{font-family:var(--syne);font-weight:700;font-size:0.95rem;margin-bottom:6px;}
+.map-overlay-sub{color:var(--text-muted);font-size:0.78rem;line-height:1.5;}
+.map-legend{display:flex;flex-direction:column;gap:6px;margin-top:12px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--text-muted);}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
-        }
+/* REVIEWS FEED */
+.reviews-feed{display:flex;flex-direction:column;gap:16px;margin-top:32px;}
+.review-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:22px;position:relative;transition:border-color 0.2s;}
+.review-card:hover{border-color:var(--border-strong);}
+.review-card-certified{border-left:3px solid var(--accent2);}
+.review-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;}
+.review-company{display:flex;align-items:center;gap:10px;}
+.review-co-logo{width:36px;height:36px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.review-co-name{font-family:var(--syne);font-weight:700;font-size:0.93rem;}
+.review-co-role{color:var(--text-muted);font-size:0.76rem;margin-top:1px;}
+.review-meta{text-align:right;flex-shrink:0;}
+.review-date{color:var(--text-dim);font-family:var(--mono);font-size:0.68rem;}
+.review-status{font-family:var(--mono);font-size:0.65rem;margin-top:3px;}
+.review-status.certified{color:var(--accent2);}
+.review-status.user{color:var(--text-muted);}
+.review-title{font-family:var(--syne);font-weight:700;font-size:1.02rem;margin-bottom:8px;}
+.review-body{color:var(--text-muted);font-size:0.88rem;line-height:1.65;font-weight:300;}
+.review-pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.pros-box,.cons-box{padding:10px 14px;border-radius:8px;font-size:0.8rem;}
+.pros-box{background:rgba(71,255,212,0.05);border:1px solid rgba(71,255,212,0.12);}
+.cons-box{background:rgba(255,107,107,0.05);border:1px solid rgba(255,107,107,0.12);}
+.pros-label{font-family:var(--mono);font-size:0.65rem;color:var(--accent2);margin-bottom:4px;letter-spacing:1px;}
+.cons-label{font-family:var(--mono);font-size:0.65rem;color:var(--accent3);margin-bottom:4px;letter-spacing:1px;}
+.review-ratings{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.mini-rating{display:flex;flex-direction:column;gap:2px;}
+.mini-rating-label{color:var(--text-dim);font-size:0.67rem;font-family:var(--mono);}
+.mini-rating-bar{width:60px;height:4px;border-radius:2px;background:var(--surface3);overflow:hidden;}
+.mini-rating-fill{height:100%;border-radius:2px;background:var(--accent);}
+.review-helpful{display:flex;align-items:center;gap:12px;margin-top:14px;}
+.helpful-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;background:var(--surface3);border:1px solid var(--border);color:var(--text-muted);font-size:0.78rem;cursor:pointer;font-family:var(--dm);transition:all 0.15s;}
+.helpful-btn:hover{border-color:var(--border-strong);color:var(--text);}
+.helpful-btn.active{background:rgba(232,255,71,0.1);border-color:rgba(232,255,71,0.3);color:var(--accent);}
+.report-btn{margin-left:auto;color:var(--text-dim);font-size:0.72rem;cursor:pointer;font-family:var(--mono);}
+.report-btn:hover{color:var(--accent3);}
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+/* CATEGORIES */
+.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:32px;}
+.cat-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;gap:14px;}
+.cat-card:hover{background:var(--surface3);border-color:var(--border-strong);transform:translateY(-1px);}
+.cat-icon{font-size:1.6rem;flex-shrink:0;}
+.cat-name{font-family:var(--syne);font-weight:700;font-size:0.9rem;margin-bottom:2px;}
+.cat-count{color:var(--text-muted);font-size:0.75rem;}
 
-        .hero {
-            position: relative;
-            height: 80vh;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
+/* WRITE REVIEW BUTTON */
+.write-cta{background:linear-gradient(135deg,var(--surface2),var(--surface3));border:1px solid var(--border-strong);border-radius:18px;padding:48px;display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:60px;position:relative;overflow:hidden;}
+.write-cta::before{content:'';position:absolute;top:-50px;right:-50px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,255,71,0.06),transparent 70%);}
+.write-cta-text h2{font-family:var(--syne);font-weight:800;font-size:1.8rem;letter-spacing:-0.5px;margin-bottom:8px;}
+.write-cta-text p{color:var(--text-muted);font-size:0.95rem;line-height:1.5;max-width:400px;}
+.cta-btn{padding:14px 32px;background:var(--accent);color:#0a0c0f;border:none;border-radius:12px;font-family:var(--syne);font-weight:800;font-size:1rem;cursor:pointer;flex-shrink:0;transition:all 0.18s;white-space:nowrap;}
+.cta-btn:hover{background:#d4eb30;transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,255,71,0.25);}
 
-        .carousel {
-            display: flex;
-            height: 100%;
-            transition: transform var(--transition-speed) ease-in-out;
-        }
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:60px 24px 40px;position:relative;z-index:1;}
+.footer-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:40px;max-width:1100px;margin:0 auto 48px;}
+.footer-brand .logo{font-size:1.2rem;margin-bottom:12px;display:block;}
+.footer-brand p{color:var(--text-muted);font-size:0.83rem;line-height:1.6;max-width:260px;}
+.footer-col h4{font-family:var(--syne);font-weight:700;font-size:0.85rem;margin-bottom:16px;}
+.footer-col a{display:block;color:var(--text-muted);font-size:0.82rem;margin-bottom:8px;text-decoration:none;transition:color 0.15s;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:0.75rem;}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr 1fr;}.write-cta{flex-direction:column;}.cta-btn{width:100%}.footer-bottom{flex-direction:column;gap:8px;}.stats-row{gap:24px;}}
 
-        .carousel-item {
-            min-width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.modal-overlay.open{opacity:1;pointer-events:auto;}
+.modal{background:var(--surface);border:1px solid var(--border-strong);border-radius:20px;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow);transform:translateY(20px);transition:transform 0.25s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:24px 28px 0;display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:var(--syne);font-weight:800;font-size:1.25rem;}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;transition:all 0.15s;}
+.modal-close:hover{background:var(--surface3);color:var(--text);}
+.modal-body{padding:24px 28px 28px;}
 
-        .carousel-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            text-align: center;
-            opacity: 0;
-            transition: opacity var(--transition-speed) ease-in-out;
-        }
+/* FORMS */
+.form-group{margin-bottom:18px;}
+label{display:block;font-size:0.8rem;color:var(--text-muted);font-family:var(--mono);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:7px;}
+input,textarea,select{width:100%;padding:11px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--dm);font-size:0.92rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none;}
+input:focus,textarea:focus,select:focus{border-color:rgba(232,255,71,0.45);box-shadow:0 0 0 3px rgba(232,255,71,0.07);}
+textarea{resize:vertical;min-height:100px;line-height:1.6;}
+select option{background:var(--surface2);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.star-rating{display:flex;flex-direction:row-reverse;gap:4px;}
+.star-rating input{display:none;}
+.star-rating label{font-size:1.5rem;cursor:pointer;color:var(--text-dim);transition:color 0.1s;padding:0;background:none;border:none;width:auto;}
+.star-rating label:hover,.star-rating label:hover~label,.star-rating input:checked~label{color:var(--accent);}
+.form-hint{color:var(--text-dim);font-size:0.73rem;margin-top:5px;font-family:var(--mono);}
+.submit-btn{width:100%;padding:14px;background:var(--accent);color:#0a0c0f;border:none;border-radius:10px;font-family:var(--syne);font-weight:800;font-size:1rem;cursor:pointer;transition:all 0.18s;margin-top:8px;}
+.submit-btn:hover{background:#d4eb30;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.divider{text-align:center;color:var(--text-dim);font-size:0.8rem;margin:16px 0;position:relative;}
+.divider::before{content:'';position:absolute;left:0;top:50%;right:0;height:1px;background:var(--border);}
+.divider span{background:var(--surface);padding:0 12px;position:relative;}
+.anon-note{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(71,255,212,0.05);border:1px solid rgba(71,255,212,0.15);border-radius:8px;font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin-bottom:16px;}
+.anon-icon{color:var(--accent2);flex-shrink:0;margin-top:1px;}
 
-        .carousel-item.active .carousel-content {
-            opacity: 1;
-        }
+/* COMPANY DETAIL */
+.company-detail{max-width:900px;margin:0 auto;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--text-muted);font-size:0.83rem;cursor:pointer;margin-bottom:24px;font-family:var(--mono);transition:color 0.15s;}
+.back-btn:hover{color:var(--accent);}
+.company-hero{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:24px;}
+.company-hero-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:24px;}
+.company-big-logo{width:72px;height:72px;border-radius:14px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;}
+.company-big-name{font-family:var(--syne);font-weight:800;font-size:1.7rem;letter-spacing:-0.5px;margin-bottom:4px;}
+.company-big-meta{color:var(--text-muted);font-size:0.85rem;display:flex;gap:14px;flex-wrap:wrap;}
+.company-big-meta span{display:flex;align-items:center;gap:4px;}
+.big-rating{display:flex;align-items:center;gap:16px;}
+.big-rating-num{font-family:var(--syne);font-weight:800;font-size:3rem;line-height:1;color:var(--accent);}
+.big-rating-details{display:flex;flex-direction:column;gap:4px;}
+.rating-breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
+.rb-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.rb-label{font-family:var(--mono);font-size:0.62rem;color:var(--text-muted);text-align:center;letter-spacing:0.5px;}
+.rb-score{font-family:var(--syne);font-weight:800;font-size:1.3rem;color:var(--text);}
+.rb-bar{width:100%;height:4px;border-radius:2px;background:var(--surface3);}
+.rb-fill{height:100%;border-radius:2px;background:var(--accent);}
 
-        .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.7);
-        }
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--surface2);border:1px solid var(--border-strong);border-radius:10px;padding:12px 18px;font-family:var(--mono);font-size:0.8rem;color:var(--text);box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all 0.28s;pointer-events:none;}
+#toast.on{opacity:1;transform:translateY(0);}
+#toast.success{border-color:rgba(71,255,212,0.4);color:var(--accent2);}
+#toast.error{border-color:rgba(255,107,107,0.4);color:var(--accent3);}
 
-        .channel-title {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-weight: 800;
-            position: relative;
-            padding-bottom: 1rem;
-        }
+/* LOADING */
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--text-muted);font-size:0.85rem;}
 
-        .channel-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 2px;
-        }
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 
-        .channel-description {
-            font-size: 1.3rem;
-            max-width: 700px;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
+/* VIEWS */
+.view{display:none;}
+.view.active{display:block;}
 
-        .watch-btn {
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            background: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.3s ease, background 0.3s ease;
-        }
+/* TAB BAR */
+.tab-bar{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;margin-bottom:24px;border:1px solid var(--border);}
+.tab{flex:1;padding:9px 16px;border:none;background:none;color:var(--text-muted);font-family:var(--syne);font-weight:600;font-size:0.83rem;cursor:pointer;border-radius:7px;transition:all 0.15s;}
+.tab.active{background:var(--bg);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.4);}
 
-        .watch-btn:hover {
-            transform: scale(1.05);
-            background: var(--accent-color);
-        }
+/* LEAFLET CUSTOMIZATION */
+.leaflet-popup-content-wrapper{background:rgba(17,20,24,0.95)!important;border:1px solid var(--border-strong)!important;border-radius:10px!important;box-shadow:var(--shadow)!important;color:var(--text)!important;font-family:var(--dm)!important;backdrop-filter:blur(14px)!important;}
+.leaflet-popup-tip{background:rgba(17,20,24,0.95)!important;}
+.leaflet-popup-content{font-size:0.85rem;color:var(--text);}
+.map-pin{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid rgba(255,255,255,0.15);box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+.pop-co-name{font-family:var(--syne);font-weight:700;font-size:0.95rem;margin-bottom:3px;}
+.pop-rating{color:var(--accent);font-size:0.82rem;margin-bottom:2px;}
+.pop-count{color:var(--text-muted);font-size:0.73rem;margin-bottom:8px;}
+.pop-view-btn{display:block;width:100%;padding:7px;background:rgba(232,255,71,0.1);border:1px solid rgba(232,255,71,0.25);color:var(--accent);border-radius:7px;font-family:var(--syne);font-weight:700;font-size:0.78rem;cursor:pointer;text-align:center;transition:all 0.15s;}
+.pop-view-btn:hover{background:rgba(232,255,71,0.2);}
 
-        .carousel-nav {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 1rem;
-        }
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:3rem;margin-bottom:16px;}
+.empty-title{font-family:var(--syne);font-weight:700;font-size:1.2rem;margin-bottom:8px;}
+.empty-text{color:var(--text-muted);font-size:0.88rem;}
 
-        .carousel-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+/* PAGINATION */
+.pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:32px;}
+.pg-btn{width:36px;height:36px;border:1px solid var(--border);background:var(--surface2);border-radius:8px;color:var(--text-muted);font-family:var(--mono);font-size:0.8rem;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.pg-btn:hover{border-color:var(--border-strong);color:var(--text);}
+.pg-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0c0f;font-weight:700;}
 
-        .carousel-dot.active {
-            background: var(--accent-color);
-        }
+/* FILTERS */
+.filters-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.filter-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-size:0.78rem;font-family:var(--mono);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.filter-chip:hover{border-color:var(--border-strong);color:var(--text);}
+.filter-chip.active{background:rgba(232,255,71,0.1);border-color:rgba(232,255,71,0.35);color:var(--accent);}
+.sort-select{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-size:0.78rem;font-family:var(--mono);cursor:pointer;outline:none;width:auto;}
+.sort-select:focus{border-color:rgba(232,255,71,0.45);}
 
-        .posts-section {
-            padding: 4rem 2rem;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-        }
+/* CLAIM BADGE */
+.claim-note{display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(180,127,255,0.06);border:1px solid rgba(180,127,255,0.18);border-radius:10px;font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-top:20px;}
+.claim-icon{color:var(--accent4);font-size:1.1rem;flex-shrink:0;}
+.claim-link{color:var(--accent4);cursor:pointer;text-decoration:underline;}
 
-        .section-title {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            text-align: center;
-            margin-bottom: 3rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 2px;
-        }
-
-        .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .post-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .post-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .post-content {
-            padding: 1.5rem;
-        }
-
-        .post-title {
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .post-excerpt {
-            color: var(--text-color);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-
-        .read-more {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: var(--primary-color);
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 25px;
-            transition: background 0.3s ease;
-        }
-
-        .read-more:hover {
-            background: var(--accent-color);
-        }
-
-        @media (max-width: 768px) {
-            .channel-title {
-                font-size: 2.5rem;
-            }
-
-            .channel-description {
-                font-size: 1.1rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .posts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+/* MAX WIDTH WRAPPER */
+.wrap{max-width:1100px;margin:0 auto;}
+</style>
 </head>
 <body>
-    <header class="header">
-        <div class="static-overlay"></div>
-        <h1 class="logo">ΛΕΤΖΙΤ</h1>
-        <h1 class="logo">ΜΙΝΤΙΑ</h1>
-    </header>
 
-    <main class="hero">
-        <div class="carousel" id="channelCarousel">
-            <div class="carousel-item active">
-                <img src="https://picsum.photos/1920/1080?random=1" alt="Channel 1">
-                <div class="carousel-content">
-                    <h2 class="channel-title">ΚΡΙΝΤΖ webTV</h2>
-                    <p class="channel-description">Η πιο κριντζ στιγμή της ημέρας.</p>
-                    <a href="https://cringertv.github.io/krintz-tv" class="watch-btn">Παρακολουθήστε</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://picsum.photos/1920/1080?random=2" alt="Channel 2">
-                <div class="carousel-content">
-                    <h2 class="channel-title">Ποταμός News</h2>
-                    <p class="channel-description">Σπάει το φράγμα της υποταγής </p>
-                    <a href="https://cringertv.github.io/potamos/" class="watch-btn">Παρακολουθήστε</button></a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://picsum.photos/1920/1080?random=3" alt="Channel 3">
-                <div class="carousel-content">
-                    <h2 class="channel-title">Χαζοκούτι</h2>
-                    <p class="channel-description"> Χαζέψτε χωρίς να γίνεστε πιο χαζά.</p>
-                    <button class="watch-btn">ΕΡΧΕΤΑΙ</button>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://picsum.photos/1920/1080?random=4" alt="Channel 4">
-                <div class="carousel-content">
-                    <h2 class="channel-title">Φρη Τέχνο</h2>
-                    <p class="channel-description">Αδιαμεσολάβητη τεχνολογική ενημέρωση αποκλειστικά από ανθρώπους</p>
-                    <button class="watch-btn">ΕΡΧΕΤΑΙ</button>
-                </div>
-            </div>
+<!-- NAV -->
+<nav>
+  <span class="logo">Work<span>Truth</span></span>
+  <div class="nav-links" id="nav-links">
+    <button class="nav-btn nav-btn-ghost" onclick="showView('home')">Browse</button>
+    <button class="nav-btn nav-btn-ghost" onclick="openModal('review-modal')">Write Review</button>
+    <div id="nav-auth">
+      <button class="nav-btn nav-btn-ghost" onclick="openModal('login-modal')">Sign In</button>
+      <button class="nav-btn nav-btn-primary" onclick="openModal('register-modal')">Join Free</button>
+    </div>
+    <div id="nav-user" style="display:none;" class="nav-user">
+      <span id="nav-username" style="font-size:0.82rem;color:var(--text-muted);font-family:var(--mono);"></span>
+      <div class="user-avatar" id="user-avatar-nav" onclick="showUserMenu()">?</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN VIEWS -->
+<div id="view-home" class="view active" style="padding-top:60px;">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="wrap" style="position:relative;z-index:1;">
+      <div class="hero-tag"><span class="hero-tag-dot"></span>EMPLOYEE-FIRST REVIEWS</div>
+      <h1>Know before<br/>you <em>accept</em><br/>the job.</h1>
+      <p class="hero-sub">Real reviews from real employees. Certified insights from verified workers. The TripAdvisor of workplaces — built for the people who clock in, not the C-suite.</p>
+      <div class="search-wrap">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="search-input" placeholder="Search company, industry or role..." autocomplete="off" oninput="handleSearch(this.value)"/>
+          <div class="search-sep"></div>
+          <input class="search-loc" id="loc-input" placeholder="📍 City" style="width:100px;"/>
+          <button class="search-btn" onclick="doSearch()">Search</button>
         </div>
-        <div class="carousel-nav" id="carouselNav"></div>
-    </main>
+        <div class="search-suggestions" id="search-suggestions"></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-num" id="stat-reviews">—</span><span class="stat-label">Reviews posted</span></div>
+        <div class="stat"><span class="stat-num" id="stat-companies">—</span><span class="stat-label">Companies covered</span></div>
+        <div class="stat"><span class="stat-num" id="stat-certified">—</span><span class="stat-label">Certified reviews</span></div>
+      </div>
+    </div>
+  </section>
 
-    <section class="posts-section">
-        <h2 class="section-title">Latest Updates</h2>
-        <div class="posts-grid">
-            <article class="post-card">
-                <img src="https://picsum.photos/600/400?random=5" alt="Post 1" class="post-image">
-                <div class="post-content">
-                    <h3 class="post-title">New Shows Coming Soon</h3>
-                    <p class="post-excerpt">Get ready for an exciting lineup of new shows and exclusive content coming to ΚΡΙΝΤΖ TV this season.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </article>
-            <article class="post-card">
-                <img src="https://picsum.photos/600/400?random=6" alt="Post 2" class="post-image">
-                <div class="post-content">
-                    <h3 class="post-title">Special Events</h3>
-                    <p class="post-excerpt">Don't miss out on our special live events and exclusive premieres. Stay tuned for more updates!</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </article>
-            <article class="post-card">
-                <img src="https://picsum.photos/600/400?random=7" alt="Post 3" class="post-image">
-                <div class="post-content">
-                    <h3 class="post-title">Behind the Scenes</h3>
-                    <p class="post-excerpt">Take a peek behind the scenes of your favorite shows and get to know the talented people who make it all possible.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </article>
+  <!-- FEATURED COMPANIES -->
+  <section class="section" id="featured">
+    <div class="wrap">
+      <div class="section-tag">TOP RATED</div>
+      <div class="section-title">Featured Employers</div>
+      <p class="section-sub">Companies with the most reviews and highest employee satisfaction scores this month.</p>
+      <div class="companies-grid" id="companies-grid">
+        <div class="loading-row"><div class="spinner"></div> Loading companies...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="section" id="map-section" style="padding:0;">
+    <div class="map-container">
+      <div id="emp-map"></div>
+      <div class="map-overlay">
+        <div class="map-overlay-title">📍 Employer Map</div>
+        <div class="map-overlay-sub">Click any pin to see ratings and reviews for employers in that area.</div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#47ffd4;"></div> 4.0+ Rating</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e8ff47;"></div> 3.0–3.9</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b;"></div> Below 3.0</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#b47fff;"></div> Certified Reviews</div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const staticOverlay = document.querySelector('.static-overlay');
-            
-            setTimeout(() => {
-                staticOverlay.classList.add('fade-out');
-            }, 5000);
-        });
+  <!-- LATEST REVIEWS -->
+  <section class="section">
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:32px;">
+        <div>
+          <div class="section-tag">FRESH INTEL</div>
+          <div class="section-title">Latest Reviews</div>
+        </div>
+        <div class="filters-row" style="margin:0;">
+          <div class="filter-chip active" onclick="filterReviews('all',this)">All</div>
+          <div class="filter-chip" onclick="filterReviews('certified',this)">✓ Certified</div>
+          <div class="filter-chip" onclick="filterReviews('user',this)">👤 User</div>
+          <select class="sort-select" onchange="sortReviews(this.value)">
+            <option value="recent">Most Recent</option>
+            <option value="helpful">Most Helpful</option>
+            <option value="rating_high">Highest Rating</option>
+            <option value="rating_low">Lowest Rating</option>
+          </select>
+        </div>
+      </div>
+      <div class="reviews-feed" id="reviews-feed">
+        <div class="loading-row"><div class="spinner"></div> Loading reviews...</div>
+      </div>
+      <div class="pagination" id="reviews-pagination"></div>
+    </div>
+  </section>
 
-        const carousel = document.getElementById('channelCarousel');
-        const items = carousel.querySelectorAll('.carousel-item');
-        const nav = document.getElementById('carouselNav');
-        let currentIndex = 0;
-        let intervalId;
+  <!-- CATEGORIES -->
+  <section class="section" style="background:var(--surface);">
+    <div class="wrap">
+      <div class="section-tag">EXPLORE</div>
+      <div class="section-title">Browse by Industry</div>
+      <div class="categories-grid" id="categories-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
 
-        // Create navigation dots
-        items.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.classList.add('carousel-dot');
-            if (index === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => goToSlide(index));
-            nav.appendChild(dot);
-        });
+  <!-- CTA -->
+  <section class="section">
+    <div class="wrap">
+      <div class="write-cta">
+        <div class="write-cta-text">
+          <h2>Worked somewhere? Tell the world.</h2>
+          <p>Your anonymous review could save someone from making the worst career decision of their life — or point them to their dream job. Takes 3 minutes.</p>
+        </div>
+        <button class="cta-btn" onclick="openModal('review-modal')">Write a Review →</button>
+      </div>
+    </div>
+  </section>
 
-        function updateCarousel() {
-            const offset = -currentIndex * 100;
-            carousel.style.transform = `translateX(${offset}%)`;
-            
-            // Update active states
-            items.forEach((item, index) => {
-                item.classList.toggle('active', index === currentIndex);
-                nav.children[index].classList.toggle('active', index === currentIndex);
-            });
-        }
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo">Work<span>Truth</span></span>
+        <p>Transparent employer reviews from people who've been there. No spin, no PR, just truth.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Discover</h4>
+        <a href="#">Top Rated Companies</a>
+        <a href="#">Recently Reviewed</a>
+        <a href="#">Browse by Industry</a>
+        <a href="#">Salary Insights</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="#" onclick="openModal('review-modal');return false;">Write a Review</a>
+        <a href="#">Certification Program</a>
+        <a href="#">Verified Worker Badge</a>
+        <a href="#">Employer Response</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About WorkTruth</a>
+        <a href="#">How We Certify</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#" onclick="openModal('login-modal');return false;">Admin Panel</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 WorkTruth. All rights reserved.</span>
+      <span>Built for workers, by workers.</span>
+    </div>
+  </footer>
 
-        function goToSlide(index) {
-            currentIndex = index;
-            updateCarousel();
-            resetInterval();
-        }
+</div><!-- /view-home -->
 
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % items.length;
-            updateCarousel();
-        }
+<!-- COMPANY DETAIL VIEW -->
+<div id="view-company" class="view" style="padding-top:80px;">
+  <div class="section wrap">
+    <div class="back-btn" onclick="showView('home')">← Back to listings</div>
+    <div id="company-detail-content">
+      <div class="loading-row"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
 
-        function resetInterval() {
-            clearInterval(intervalId);
-            intervalId = setInterval(nextSlide, 5000);
-        }
+<!-- SEARCH RESULTS VIEW -->
+<div id="view-search" class="view" style="padding-top:80px;">
+  <div class="section wrap">
+    <div class="back-btn" onclick="showView('home')">← Back</div>
+    <div class="section-title" id="search-results-title">Search Results</div>
+    <div class="companies-grid" id="search-results-grid" style="margin-top:24px;"></div>
+  </div>
+</div>
 
-        // Initialize auto-rotation
-        resetInterval();
+<!-- ===================== MODALS ===================== -->
 
-        // Add touch support
-        let touchStartX = 0;
-        let touchEndX = 0;
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Write a Review</div>
+      <button class="modal-close" onclick="closeModal('review-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="anon-note"><span class="anon-icon">🔒</span><span>Your identity is protected. You can post anonymously or sign in for a verified badge. We never share your personal info with employers.</span></div>
+      <div class="form-group">
+        <label>Company Name *</label>
+        <input id="rv-company" placeholder="e.g. Acme Corporation" list="company-datalist"/>
+        <datalist id="company-datalist"></datalist>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Job Title *</label>
+          <input id="rv-role" placeholder="e.g. Software Engineer"/>
+        </div>
+        <div class="form-group">
+          <label>Employment Type</label>
+          <select id="rv-emptype">
+            <option value="full_time">Full Time</option>
+            <option value="part_time">Part Time</option>
+            <option value="contract">Contract</option>
+            <option value="internship">Internship</option>
+            <option value="freelance">Freelance</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Employment Status</label>
+          <select id="rv-status">
+            <option value="current">Current Employee</option>
+            <option value="former">Former Employee</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Work Location</label>
+          <input id="rv-location" placeholder="City, Country"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Overall Rating *</label>
+        <div class="star-rating" id="overall-stars">
+          <input type="radio" name="overall" id="s5" value="5"/><label for="s5">★</label>
+          <input type="radio" name="overall" id="s4" value="4"/><label for="s4">★</label>
+          <input type="radio" name="overall" id="s3" value="3"/><label for="s3">★</label>
+          <input type="radio" name="overall" id="s2" value="2"/><label for="s2">★</label>
+          <input type="radio" name="overall" id="s1" value="1"/><label for="s1">★</label>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;">
+        <div class="form-group" style="margin:0;">
+          <label>Work-Life Balance</label>
+          <div class="star-rating" id="wlb-stars">
+            <input type="radio" name="wlb" id="w5" value="5"/><label for="w5">★</label>
+            <input type="radio" name="wlb" id="w4" value="4"/><label for="w4">★</label>
+            <input type="radio" name="wlb" id="w3" value="3"/><label for="w3">★</label>
+            <input type="radio" name="wlb" id="w2" value="2"/><label for="w2">★</label>
+            <input type="radio" name="wlb" id="w1" value="1"/><label for="w1">★</label>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Salary & Benefits</label>
+          <div class="star-rating">
+            <input type="radio" name="salary" id="sal5" value="5"/><label for="sal5">★</label>
+            <input type="radio" name="salary" id="sal4" value="4"/><label for="sal4">★</label>
+            <input type="radio" name="salary" id="sal3" value="3"/><label for="sal3">★</label>
+            <input type="radio" name="salary" id="sal2" value="2"/><label for="sal2">★</label>
+            <input type="radio" name="salary" id="sal1" value="1"/><label for="sal1">★</label>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Management</label>
+          <div class="star-rating">
+            <input type="radio" name="mgmt" id="m5" value="5"/><label for="m5">★</label>
+            <input type="radio" name="mgmt" id="m4" value="4"/><label for="m4">★</label>
+            <input type="radio" name="mgmt" id="m3" value="3"/><label for="m3">★</label>
+            <input type="radio" name="mgmt" id="m2" value="2"/><label for="m2">★</label>
+            <input type="radio" name="mgmt" id="m1" value="1"/><label for="m1">★</label>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Career Growth</label>
+          <div class="star-rating">
+            <input type="radio" name="growth" id="g5" value="5"/><label for="g5">★</label>
+            <input type="radio" name="growth" id="g4" value="4"/><label for="g4">★</label>
+            <input type="radio" name="growth" id="g3" value="3"/><label for="g3">★</label>
+            <input type="radio" name="growth" id="g2" value="2"/><label for="g2">★</label>
+            <input type="radio" name="growth" id="g1" value="1"/><label for="g1">★</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Review Headline *</label>
+        <input id="rv-title" placeholder="e.g. Great culture, terrible management" maxlength="100"/>
+      </div>
+      <div class="form-group">
+        <label>Your Experience *</label>
+        <textarea id="rv-body" placeholder="Tell future employees what it's really like working here..." rows="4"></textarea>
+        <div class="form-hint">Min 50 characters. Be specific and honest.</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pros</label>
+          <textarea id="rv-pros" placeholder="What's good?" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Cons</label>
+          <textarea id="rv-cons" placeholder="What needs improvement?" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Reviewer Display Name (leave blank for Anonymous)</label>
+        <input id="rv-author" placeholder="Anonymous"/>
+        <div class="form-hint">A nickname or your real name. Never shown with your email.</div>
+      </div>
+      <button class="submit-btn" id="submit-review-btn" onclick="submitReview()">Submit Review →</button>
+    </div>
+  </div>
+</div>
 
-        carousel.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Sign In</div>
+      <button class="modal-close" onclick="closeModal('login-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Email</label><input id="login-email" type="email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label>Password</label><input id="login-pass" type="password" placeholder="••••••••"/></div>
+      <button class="submit-btn" onclick="doLogin()">Sign In</button>
+      <div class="divider"><span>or</span></div>
+      <button class="submit-btn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);" onclick="doAnonSignIn()">Continue Anonymously</button>
+      <p style="text-align:center;margin-top:14px;font-size:0.8rem;color:var(--text-muted);">No account? <span style="color:var(--accent);cursor:pointer;" onclick="closeModal('login-modal');openModal('register-modal')">Join free →</span></p>
+    </div>
+  </div>
+</div>
 
-        carousel.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && currentIndex < items.length - 1) {
-                    goToSlide(currentIndex + 1);
-                } else if (diff < 0 && currentIndex > 0) {
-                    goToSlide(currentIndex - 1);
-                }
-            }
-        });
-    </script>
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="register-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create Account</div>
+      <button class="modal-close" onclick="closeModal('register-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="anon-note"><span class="anon-icon">🔒</span><span>Your employer can never see your account or link it to your reviews. Your email is never shared.</span></div>
+      <div class="form-group"><label>Display Name</label><input id="reg-name" placeholder="How you'll appear publicly"/></div>
+      <div class="form-group"><label>Email</label><input id="reg-email" type="email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label>Password</label><input id="reg-pass" type="password" placeholder="8+ characters"/></div>
+      <button class="submit-btn" onclick="doRegister()">Create Account →</button>
+      <p style="text-align:center;margin-top:14px;font-size:0.8rem;color:var(--text-muted);">Already have an account? <span style="color:var(--accent);cursor:pointer;" onclick="closeModal('register-modal');openModal('login-modal')">Sign in →</span></p>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — replace with your Supabase project values
+// ═══════════════════════════════════════════════════
+const SB_URL = 'YOUR_SUPABASE_URL';
+const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+var sb, MAP;
+var currentUser = null;
+var anonSession = false;
+var allReviews = [];
+var allCompanies = [];
+var currentFilter = 'all';
+var currentSort = 'recent';
+var currentPage = 1;
+const PAGE_SIZE = 6;
+var toastTimer;
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', async function() {
+  try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e){ console.warn('SB:',e); }
+
+  // Restore session
+  if (sb) {
+    var { data: { session } } = await sb.auth.getSession();
+    if (session) setUserUI(session.user);
+    sb.auth.onAuthStateChange((_,s) => { if(s) setUserUI(s.user); else clearUserUI(); });
+  }
+
+  // Init map
+  initMap();
+
+  // Load data
+  await Promise.all([loadCompanies(), loadReviews()]);
+  loadStats();
+  buildCategories();
+  populateCompanyDatalist();
+});
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+async function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-pass').value;
+  if (!email||!pass) return toast('Fill in email and password','error');
+  var { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) return toast('Login failed: '+error.message,'error');
+  setUserUI(data.user);
+  closeModal('login-modal');
+  toast('Welcome back! 👋','success');
+}
+
+async function doRegister() {
+  var name  = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass  = document.getElementById('reg-pass').value;
+  if (!name||!email||!pass) return toast('All fields required','error');
+  if (pass.length < 8) return toast('Password needs 8+ chars','error');
+  var { data, error } = await sb.auth.signUp({ email, password: pass, options:{ data:{ display_name: name } } });
+  if (error) return toast('Registration failed: '+error.message,'error');
+  setUserUI(data.user);
+  closeModal('register-modal');
+  toast('Account created! ✓','success');
+}
+
+async function doAnonSignIn() {
+  var { data, error } = await sb.auth.signInAnonymously();
+  if (error) { anonSession = true; closeModal('login-modal'); toast('Posting anonymously','success'); return; }
+  anonSession = true;
+  setUserUI(data.user, true);
+  closeModal('login-modal');
+  toast('Continuing anonymously 🕵️','success');
+}
+
+function setUserUI(user, isAnon) {
+  currentUser = user;
+  document.getElementById('nav-auth').style.display = 'none';
+  document.getElementById('nav-user').style.display = 'flex';
+  var name = (user.user_metadata && user.user_metadata.display_name) || (isAnon ? 'Anonymous' : user.email.split('@')[0]);
+  document.getElementById('nav-username').textContent = name;
+  document.getElementById('user-avatar-nav').textContent = name[0].toUpperCase();
+}
+
+function clearUserUI() {
+  currentUser = null;
+  document.getElementById('nav-auth').style.display = 'flex';
+  document.getElementById('nav-user').style.display = 'none';
+}
+
+function showUserMenu() {
+  // Simple sign out
+  if (confirm('Sign out?')) { sb.auth.signOut(); clearUserUI(); toast('Signed out'); }
+}
+
+// ═══════════════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════════════
+function initMap() {
+  var el = document.getElementById('emp-map');
+  MAP = L.map('emp-map', { zoomControl: false, center: [40, 20], zoom: 3 });
+  L.control.zoom({ position: 'bottomright' }).addTo(MAP);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(MAP);
+  MAP.getContainer().style.filter = 'brightness(0.7) saturate(0.6) hue-rotate(180deg) invert(1) contrast(0.85)';
+}
+
+function addCompanyPins(companies) {
+  if (!MAP) return;
+  companies.forEach(function(c) {
+    if (!c.lat || !c.lng) return;
+    var rating = parseFloat(c.avg_rating) || 0;
+    var color = rating >= 4 ? '#47ffd4' : rating >= 3 ? '#e8ff47' : '#ff6b6b';
+    if (c.has_certified) color = '#b47fff';
+    var icon = L.divIcon({
+      className: '',
+      html: '<div class="map-pin" style="background:'+color+';color:#0a0c0f;font-size:1rem;">'+
+            (c.emoji || '🏢')+'</div>',
+      iconSize:[38,38], iconAnchor:[19,19], popupAnchor:[0,-22]
+    });
+    var marker = L.marker([c.lat, c.lng], { icon });
+    var stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5-Math.round(rating));
+    marker.bindPopup(
+      '<div class="pop-co-name">'+(c.name||'')+'</div>'+
+      '<div class="pop-rating">'+stars+'</div>'+
+      '<div class="pop-count">'+(c.review_count||0)+' reviews · '+(c.industry||'')+'</div>'+
+      '<button class="pop-view-btn" onclick="viewCompany(\''+c.id+'\')">View Reviews →</button>'
+    );
+    marker.addTo(MAP);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════════
+async function loadCompanies() {
+  if (!sb) return renderCompaniesGrid(getDemoCompanies());
+  var { data, error } = await sb.from('companies').select('*').eq('is_active', true).order('avg_rating', { ascending: false }).limit(12);
+  if (error || !data || !data.length) { renderCompaniesGrid(getDemoCompanies()); addCompanyPins(getDemoCompanies()); return; }
+  allCompanies = data;
+  renderCompaniesGrid(data);
+  addCompanyPins(data);
+}
+
+async function loadReviews(page) {
+  page = page || 1;
+  currentPage = page;
+  if (!sb) return renderReviews(getDemoReviews());
+  var q = sb.from('reviews').select('*,companies(name,emoji,industry)').eq('status','approved');
+  if (currentFilter === 'certified') q = q.eq('is_certified', true);
+  if (currentFilter === 'user') q = q.eq('is_certified', false);
+  if (currentSort === 'helpful') q = q.order('helpful_count', { ascending: false });
+  else if (currentSort === 'rating_high') q = q.order('rating_overall', { ascending: false });
+  else if (currentSort === 'rating_low') q = q.order('rating_overall', { ascending: true });
+  else q = q.order('created_at', { ascending: false });
+  var start = (page-1)*PAGE_SIZE;
+  q = q.range(start, start+PAGE_SIZE-1);
+  var { data, error, count } = await q;
+  if (error || !data) return renderReviews(getDemoReviews());
+  renderReviews(data);
+}
+
+async function loadStats() {
+  if (!sb) { setStats('2.4k','380','142'); return; }
+  var [rv,co,cert] = await Promise.all([
+    sb.from('reviews').select('id',{count:'exact',head:true}).eq('status','approved'),
+    sb.from('companies').select('id',{count:'exact',head:true}).eq('is_active',true),
+    sb.from('reviews').select('id',{count:'exact',head:true}).eq('is_certified',true).eq('status','approved')
+  ]);
+  setStats(fmt(rv.count||0), fmt(co.count||0), fmt(cert.count||0));
+}
+
+function setStats(r,c,cert) {
+  document.getElementById('stat-reviews').textContent = r;
+  document.getElementById('stat-companies').textContent = c;
+  document.getElementById('stat-certified').textContent = cert;
+}
+function fmt(n){ return n>=1000?(n/1000).toFixed(1)+'k':String(n); }
+
+function populateCompanyDatalist() {
+  var dl = document.getElementById('company-datalist');
+  var list = allCompanies.length ? allCompanies : getDemoCompanies();
+  dl.innerHTML = list.map(c=>'<option value="'+escHtml(c.name)+'">').join('');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+function renderCompaniesGrid(companies) {
+  var g = document.getElementById('companies-grid');
+  if (!companies.length) { g.innerHTML = '<div class="empty-state"><div class="empty-icon">🏭</div><div class="empty-title">No companies yet</div><div class="empty-text">Be the first to review an employer.</div></div>'; return; }
+  g.innerHTML = companies.map(c => companyCardHTML(c)).join('');
+}
+
+function companyCardHTML(c) {
+  var rating = parseFloat(c.avg_rating)||0;
+  var stars = '★'.repeat(Math.round(rating))+'☆'.repeat(5-Math.round(rating));
+  var badges = '';
+  if (c.is_certified_partner) badges += '<span class="badge badge-certified">✓ CERTIFIED</span>';
+  if (c.is_trending) badges += '<span class="badge badge-trending">↑ TRENDING</span>';
+  if (c.avg_rating && c.avg_rating < 2.5) badges += '<span class="badge badge-warn">⚠ LOW SCORE</span>';
+  if (c.city) badges += '<span class="badge badge-location">📍 '+escHtml(c.city)+'</span>';
+  return '<div class="company-card" onclick="viewCompany(\''+c.id+'\')">' +
+    '<div class="company-card-header">' +
+      '<div class="company-logo">'+(c.emoji||'🏢')+'</div>' +
+      '<div><div class="company-name">'+escHtml(c.name)+'</div><div class="company-industry">'+escHtml(c.industry||'')+'</div></div>' +
+    '</div>' +
+    '<div class="company-badges">'+badges+'</div>' +
+    '<div class="rating-row"><span class="stars">'+stars+'</span><span class="rating-num">'+rating.toFixed(1)+'</span><span class="rating-count">('+( c.review_count||0)+' reviews)</span></div>' +
+    (c.tagline ? '<div class="company-snippet">'+escHtml(c.tagline)+'</div>' : '') +
+    '</div>';
+}
+
+function renderReviews(reviews) {
+  var f = document.getElementById('reviews-feed');
+  if (!reviews.length) { f.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No reviews yet</div><div class="empty-text">Be the first to write one.</div></div>'; return; }
+  f.innerHTML = reviews.map(r => reviewCardHTML(r)).join('');
+}
+
+function reviewCardHTML(r) {
+  var co = r.companies || {};
+  var overall = r.rating_overall||0;
+  var stars = '★'.repeat(Math.round(overall))+'☆'.repeat(5-Math.round(overall));
+  var certified = r.is_certified;
+  var date = r.created_at ? new Date(r.created_at).toLocaleDateString('en',{year:'numeric',month:'short',day:'numeric'}) : '';
+  var subratings = '';
+  var subs = [{label:'WLB',val:r.rating_wlb},{label:'SALARY',val:r.rating_salary},{label:'MGMT',val:r.rating_mgmt},{label:'GROWTH',val:r.rating_growth}];
+  subs.forEach(function(s){ if(s.val){ subratings += '<div class="mini-rating"><div class="mini-rating-label">'+s.label+'</div><div class="mini-rating-bar"><div class="mini-rating-fill" style="width:'+(s.val/5*100)+'%"></div></div></div>'; }});
+  return '<div class="review-card'+(certified?' review-card-certified':'')+'">' +
+    '<div class="review-header">' +
+      '<div class="review-company">' +
+        '<div class="review-co-logo">'+(co.emoji||'🏢')+'</div>' +
+        '<div><div class="review-co-name">'+(co.name||r.company_name||'Unknown')+'</div>' +
+        '<div class="review-co-role">'+(r.role||'Employee')+(r.employment_status?' · '+(r.employment_status==='current'?'Current':'Former'):'')+' Employee</div></div>' +
+      '</div>' +
+      '<div class="review-meta">' +
+        '<div class="review-date">'+date+'</div>' +
+        '<div class="review-status '+(certified?'certified':'user')+'">'+(certified?'✓ CERTIFIED REVIEW':'👤 USER REVIEW')+'</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="color:var(--accent);">'+stars+'</span><span style="font-family:var(--syne);font-weight:700;">'+(overall.toFixed?overall.toFixed(1):overall)+'</span></div>' +
+    '<div class="review-title">'+escHtml(r.title||'Review')+'</div>' +
+    '<div class="review-body">'+escHtml(r.body||'')+'</div>' +
+    ((r.pros||r.cons)?'<div class="review-pros-cons">'+
+      (r.pros?'<div class="pros-box"><div class="pros-label">PROS</div>'+escHtml(r.pros)+'</div>':'')+
+      (r.cons?'<div class="cons-box"><div class="cons-label">CONS</div>'+escHtml(r.cons)+'</div>':'')+
+    '</div>':'') +
+    (subratings?'<div class="review-ratings">'+subratings+'</div>':'') +
+    '<div class="review-helpful">' +
+      '<button class="helpful-btn" onclick="markHelpful(\''+r.id+'\',this)">👍 Helpful <span>'+(r.helpful_count||0)+'</span></button>' +
+      '<span class="report-btn" onclick="reportReview(\''+r.id+'\')">⚑ Report</span>' +
+    '</div>' +
+    '</div>';
+}
+
+function buildCategories() {
+  var cats = [
+    {icon:'💻',name:'Technology',count:'1.2k+'},
+    {icon:'🏥',name:'Healthcare',count:'890+'},
+    {icon:'🏦',name:'Finance',count:'740+'},
+    {icon:'🛒',name:'Retail',count:'1.1k+'},
+    {icon:'🏗️',name:'Construction',count:'420+'},
+    {icon:'📚',name:'Education',count:'580+'},
+    {icon:'🍽️',name:'Hospitality',count:'670+'},
+    {icon:'🚚',name:'Logistics',count:'390+'},
+    {icon:'⚖️',name:'Legal',count:'210+'},
+    {icon:'🎨',name:'Creative',count:'300+'},
+  ];
+  document.getElementById('categories-grid').innerHTML = cats.map(c =>
+    '<div class="cat-card" onclick="searchByIndustry(\''+c.name+'\')"><span class="cat-icon">'+c.icon+'</span><div><div class="cat-name">'+c.name+'</div><div class="cat-count">'+c.count+' reviews</div></div></div>'
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// COMPANY DETAIL
+// ═══════════════════════════════════════════════════
+async function viewCompany(id) {
+  showView('company');
+  var el = document.getElementById('company-detail-content');
+  el.innerHTML = '<div class="loading-row"><div class="spinner"></div> Loading...</div>';
+
+  var company, reviews;
+  if (!sb) {
+    company = getDemoCompanies().find(c=>c.id==id) || getDemoCompanies()[0];
+    reviews = getDemoReviews().slice(0,5);
+  } else {
+    var [cr, rr] = await Promise.all([
+      sb.from('companies').select('*').eq('id',id).single(),
+      sb.from('reviews').select('*').eq('company_id',id).eq('status','approved').order('created_at',{ascending:false}).limit(20)
+    ]);
+    company = cr.data; reviews = rr.data||[];
+  }
+  if (!company) { el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Company not found</div></div>'; return; }
+
+  var rating = parseFloat(company.avg_rating)||0;
+  var stars = '★'.repeat(Math.round(rating))+'☆'.repeat(5-Math.round(rating));
+  var rbs = [
+    {label:'WLB',key:'avg_wlb'},{label:'SALARY',key:'avg_salary'},{label:'MGMT',key:'avg_mgmt'},{label:'GROWTH',key:'avg_growth'}
+  ];
+  var rbHTML = rbs.map(function(rb){
+    var v=parseFloat(company[rb.key])||0;
+    return '<div class="rb-item"><div class="rb-label">'+rb.label+'</div><div class="rb-score">'+(v?v.toFixed(1):'—')+'</div><div class="rb-bar"><div class="rb-fill" style="width:'+(v/5*100)+'%"></div></div></div>';
+  }).join('');
+
+  var badges = '';
+  if (company.is_certified_partner) badges += '<span class="badge badge-certified">✓ CERTIFIED PARTNER</span>';
+  if (company.is_trending) badges += '<span class="badge badge-trending">↑ TRENDING</span>';
+
+  var reviewsHTML = reviews.length ? reviews.map(r=>reviewCardHTML(r)).join('') :
+    '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No reviews yet</div><div class="empty-text">Be the first to review this employer.</div></div>';
+
+  el.innerHTML =
+    '<div class="company-detail">' +
+      '<div class="company-hero">' +
+        '<div class="company-hero-header">' +
+          '<div class="company-big-logo">'+(company.emoji||'🏢')+'</div>' +
+          '<div style="flex:1;">' +
+            '<div class="company-badges" style="margin-bottom:8px;">'+badges+'</div>' +
+            '<div class="company-big-name">'+escHtml(company.name)+'</div>' +
+            '<div class="company-big-meta">' +
+              (company.industry?'<span>🏭 '+escHtml(company.industry)+'</span>':'') +
+              (company.city?'<span>📍 '+escHtml(company.city)+'</span>':'') +
+              (company.size_range?'<span>👥 '+escHtml(company.size_range)+'</span>':'') +
+              (company.founded_year?'<span>📅 Est. '+company.founded_year+'</span>':'') +
+            '</div>' +
+          '</div>' +
+          '<div class="big-rating">' +
+            '<div class="big-rating-num">'+rating.toFixed(1)+'</div>' +
+            '<div class="big-rating-details">' +
+              '<div style="color:var(--accent);font-size:1.1rem;">'+stars+'</div>' +
+              '<div style="color:var(--text-muted);font-size:0.78rem;">'+(company.review_count||reviews.length)+' reviews</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rating-breakdown">' +
+          '<div class="rb-item"><div class="rb-label">OVERALL</div><div class="rb-score">'+rating.toFixed(1)+'</div><div class="rb-bar"><div class="rb-fill" style="width:'+(rating/5*100)+'%"></div></div></div>' +
+          rbHTML +
+        '</div>' +
+        (company.description?'<p style="color:var(--text-muted);font-size:0.88rem;line-height:1.65;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">'+escHtml(company.description)+'</p>':'') +
+        '<div class="claim-note"><span class="claim-icon">🏢</span><span>Is this your company? <span class="claim-link" onclick="toast(\'Contact admin@worktruth.io to claim this profile.\')">Claim this profile</span> to respond to reviews and add verified information.</span></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+        '<div style="font-family:var(--syne);font-weight:800;font-size:1.2rem;">Employee Reviews</div>' +
+        '<button class="nav-btn nav-btn-primary" onclick="document.getElementById(\'rv-company\').value=\''+escHtml(company.name)+'\';openModal(\'review-modal\')">Write Review</button>' +
+      '</div>' +
+      '<div class="reviews-feed">'+reviewsHTML+'</div>' +
+    '</div>';
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════
+// REVIEW SUBMISSION
+// ═══════════════════════════════════════════════════
+async function submitReview() {
+  var btn = document.getElementById('submit-review-btn');
+  var company = document.getElementById('rv-company').value.trim();
+  var role    = document.getElementById('rv-role').value.trim();
+  var title   = document.getElementById('rv-title').value.trim();
+  var body    = document.getElementById('rv-body').value.trim();
+  var overall = getSelectedRating('overall');
+
+  if (!company||!role||!title||!body||!overall) return toast('Fill in all required fields *','error');
+  if (body.length < 50) return toast('Review body needs 50+ characters','error');
+
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  // Auth if needed
+  if (!currentUser && sb) {
+    var { data, error } = await sb.auth.signInAnonymously();
+    if (!error) currentUser = data.user;
+  }
+
+  var payload = {
+    company_name: company,
+    role:         role,
+    emp_type:     document.getElementById('rv-emptype').value,
+    employment_status: document.getElementById('rv-status').value,
+    location:     document.getElementById('rv-location').value.trim(),
+    title,
+    body,
+    pros:         document.getElementById('rv-pros').value.trim(),
+    cons:         document.getElementById('rv-cons').value.trim(),
+    rating_overall: parseInt(overall),
+    rating_wlb:   parseInt(getSelectedRating('wlb'))||null,
+    rating_salary:parseInt(getSelectedRating('salary'))||null,
+    rating_mgmt:  parseInt(getSelectedRating('mgmt'))||null,
+    rating_growth:parseInt(getSelectedRating('growth'))||null,
+    author_name:  document.getElementById('rv-author').value.trim() || 'Anonymous',
+    is_certified: false,
+    status:       'pending',
+    helpful_count:0
+  };
+
+  // Try to match company_id
+  var match = allCompanies.find(c=>c.name.toLowerCase()===company.toLowerCase());
+  if (match) payload.company_id = match.id;
+
+  if (sb) {
+    var { error } = await sb.from('reviews').insert([payload]);
+    if (error) { btn.disabled=false; btn.textContent='Submit Review →'; return toast('Error: '+error.message,'error'); }
+  }
+
+  btn.disabled=false; btn.textContent='Submit Review →';
+  closeModal('review-modal');
+  toast('Review submitted! It\'ll appear after approval. ✓','success');
+  // Reset form
+  ['rv-company','rv-role','rv-title','rv-body','rv-pros','rv-cons','rv-author','rv-location'].forEach(id=>{ var el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelectorAll('.star-rating input').forEach(i=>i.checked=false);
+}
+
+function getSelectedRating(name) {
+  var el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? el.value : null;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════
+async function markHelpful(reviewId, btn) {
+  if (btn.classList.contains('active')) return;
+  btn.classList.add('active');
+  var span = btn.querySelector('span');
+  if (span) span.textContent = parseInt(span.textContent||0)+1;
+  if (sb) await sb.rpc('increment_helpful', { review_id: reviewId });
+}
+
+async function reportReview(reviewId) {
+  if (!confirm('Report this review as inappropriate?')) return;
+  if (sb) await sb.from('review_reports').insert([{ review_id: reviewId, reason:'inappropriate' }]);
+  toast('Report submitted. Our team will review it.','success');
+}
+
+// ═══════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════
+function handleSearch(val) {
+  var sug = document.getElementById('search-suggestions');
+  if (!val || val.length < 2) { sug.classList.remove('visible'); return; }
+  var list = allCompanies.length ? allCompanies : getDemoCompanies();
+  var matches = list.filter(c=>c.name.toLowerCase().includes(val.toLowerCase())).slice(0,5);
+  if (!matches.length) { sug.classList.remove('visible'); return; }
+  sug.innerHTML = matches.map(c =>
+    '<div class="sug-item" onclick="viewCompany(\''+c.id+'\');document.getElementById(\'search-suggestions\').classList.remove(\'visible\')">'+
+      '<span class="sug-item-icon">'+(c.emoji||'🏢')+'</span>'+
+      '<div><div>'+escHtml(c.name)+'</div><div class="sug-item-sub">'+(c.industry||'')+' · '+(c.city||'')+'</div></div>'+
+    '</div>'
+  ).join('');
+  sug.classList.add('visible');
+}
+
+function doSearch() {
+  var q = document.getElementById('search-input').value.trim();
+  var loc = document.getElementById('loc-input').value.trim();
+  document.getElementById('search-suggestions').classList.remove('visible');
+  var list = allCompanies.length ? allCompanies : getDemoCompanies();
+  var results = list.filter(c => {
+    var nm = c.name.toLowerCase().includes(q.toLowerCase());
+    var lc = !loc || (c.city&&c.city.toLowerCase().includes(loc.toLowerCase()));
+    return nm && lc;
+  });
+  document.getElementById('search-results-title').textContent = 'Results for "'+q+'"'+(loc?' in '+loc:'');
+  document.getElementById('search-results-grid').innerHTML = results.length ?
+    results.map(c=>companyCardHTML(c)).join('') :
+    '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results found</div><div class="empty-text">Try a different search term.</div></div>';
+  showView('search');
+}
+
+function searchByIndustry(industry) {
+  var list = allCompanies.length ? allCompanies : getDemoCompanies();
+  var results = list.filter(c => c.industry && c.industry.toLowerCase().includes(industry.toLowerCase()));
+  document.getElementById('search-results-title').textContent = industry + ' Companies';
+  document.getElementById('search-results-grid').innerHTML = results.length ?
+    results.map(c=>companyCardHTML(c)).join('') :
+    '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No companies in '+industry+' yet</div></div>';
+  showView('search');
+}
+
+// ═══════════════════════════════════════════════════
+// FILTERS & SORT
+// ═══════════════════════════════════════════════════
+function filterReviews(filter, el) {
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = filter;
+  loadReviews(1);
+}
+
+function sortReviews(val) {
+  currentSort = val;
+  loadReviews(1);
+}
+
+// ═══════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (name==='home' && MAP) setTimeout(()=>MAP.invalidateSize(),200);
+}
+
+// ═══════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow='';
+}
+document.querySelectorAll('.modal-overlay').forEach(function(m){
+  m.addEventListener('click',function(e){ if(e.target===m) closeModal(m.id); });
+});
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>closeModal(m.id)); });
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'on' + (type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.className='', 4000);
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════
+// DEMO DATA (shown when DB is empty / not configured)
+// ═══════════════════════════════════════════════════
+function getDemoCompanies() {
+  return [
+    {id:'d1',name:'Nexovate Tech',industry:'Technology',emoji:'💻',city:'Athens',lat:37.98,lng:23.73,avg_rating:4.3,review_count:142,is_certified_partner:true,is_trending:true,tagline:'Great culture and fast growth, hybrid-remote friendly team.'},
+    {id:'d2',name:'MedCore Hospitals',industry:'Healthcare',emoji:'🏥',city:'Berlin',lat:52.52,lng:13.40,avg_rating:3.1,review_count:87,is_certified_partner:false,tagline:'Demanding but rewarding. Benefits are solid.'},
+    {id:'d3',name:'TrueBank Group',industry:'Finance',emoji:'🏦',city:'London',lat:51.50,lng:-0.12,avg_rating:2.4,review_count:213,is_certified_partner:false,tagline:'High pay, high pressure. Work-life balance is non-existent.'},
+    {id:'d4',name:'Greenline Logistics',industry:'Logistics',emoji:'🚚',city:'Warsaw',lat:52.23,lng:21.01,avg_rating:3.8,review_count:54,is_trending:true,tagline:'Decent pay. Night shifts are rough but management tries.'},
+    {id:'d5',name:'EduPlus Academy',industry:'Education',emoji:'📚',city:'Paris',lat:48.86,lng:2.35,avg_rating:4.6,review_count:38,is_certified_partner:true,tagline:'Best place I\'ve worked. Supportive team, amazing students.'},
+    {id:'d6',name:'UrbanEats Co.',industry:'Hospitality',emoji:'🍽️',city:'Barcelona',lat:41.39,lng:2.16,avg_rating:2.9,review_count:176,tagline:'Fast-paced but chaotic. Tips are good at busy locations.'},
+  ];
+}
+
+function getDemoReviews() {
+  return [
+    {id:'r1',company_name:'Nexovate Tech',companies:{name:'Nexovate Tech',emoji:'💻',industry:'Technology'},role:'Senior Engineer',employment_status:'current',title:'The best tech job I\'ve had in 12 years',body:'Genuinely remote-first culture, not just words. Management trusts you to deliver without micromanaging. Salaries are competitive and there\'s a real performance review that actually leads to raises. The stack is modern and you\'re encouraged to propose architecture changes.',pros:'Autonomy, remote-first, great stack, real raises',cons:'Fast growth means occasional chaos in process',rating_overall:5,rating_wlb:4,rating_salary:5,rating_mgmt:5,rating_growth:5,is_certified:true,helpful_count:47,created_at:'2025-03-12T09:00:00Z'},
+    {id:'r2',company_name:'TrueBank Group',companies:{name:'TrueBank Group',emoji:'🏦',industry:'Finance'},role:'Junior Analyst',employment_status:'former',title:'Golden cage — pay is great, everything else is brutal',body:'They will pay you well. That\'s the good news. The bad news: 80-hour weeks are normal. "Voluntary" weekend work that is anything but voluntary. I left after 14 months for my health. If you value time with family or friends, this place will cost you that.',pros:'Compensation, prestige on CV, fast exit opportunities',cons:'Culture of fear, zero work-life balance, toxic hierarchy',rating_overall:2,rating_wlb:1,rating_salary:5,rating_mgmt:2,rating_growth:3,is_certified:false,helpful_count:133,created_at:'2025-02-28T15:30:00Z'},
+    {id:'r3',company_name:'EduPlus Academy',companies:{name:'EduPlus Academy',emoji:'📚',industry:'Education'},role:'Curriculum Designer',employment_status:'current',title:'Small team, huge impact — I love coming to work',body:'EduPlus is the rare employer that actually listens to staff. We have monthly town halls where leadership answers real questions. PTO is genuinely encouraged — I\'ve never had a request declined. The mission matters and you feel it every day.',pros:'Meaningful work, supportive leadership, proper PTO',cons:'Salary slightly below market, limited remote options',rating_overall:5,rating_wlb:5,rating_salary:3,rating_mgmt:5,rating_growth:4,is_certified:true,helpful_count:29,created_at:'2025-03-05T11:00:00Z'},
+    {id:'r4',company_name:'UrbanEats Co.',companies:{name:'UrbanEats Co.',emoji:'🍽️',industry:'Hospitality'},role:'Kitchen Manager',employment_status:'former',title:'Revolving door of staff — wonder why',body:'High turnover should tell you everything. Shifts are 12+ hours with no overtime pay because they keep you "just under" the threshold. The area managers are under pressure and pass it all down. Some individual restaurants are better than others but the culture comes from HQ.',pros:'Tips can be good, fast-paced keeps you sharp',cons:'No overtime respect, poor scheduling, high staff churn',rating_overall:2,rating_wlb:2,rating_salary:2,rating_mgmt:2,rating_growth:2,is_certified:false,helpful_count:88,created_at:'2025-01-18T08:00:00Z'},
+  ];
+}
+</script>
 </body>
-</html> 
+</html>
